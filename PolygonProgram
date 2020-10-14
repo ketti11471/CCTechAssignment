@@ -1,0 +1,70 @@
+x = 0
+y = 1
+INF = 10000
+
+def onSegment(p, q, r):
+    if q[x] <= max(p[x], r[x]) and q[x] >= min(p[x], r[x]) and q[y] <= max(p[y], r[y]) and q[y] >= min(p[y], r[y]) :
+        return True
+    return False
+
+def orientation(p, q, r):
+    val = (q[y] - p[y]) * (r[x] - q[x]) - (q[x] - p[x]) * (r[y] - q[y])
+    if val == 0:
+        return 0
+    elif val > 0:
+        return 1
+    else:
+        return 2
+
+def doIntersect(p1, q1, p2, q2):
+    o1 = orientation(p1, q1, p2)
+    o2 = orientation(p1, q1, q2)
+    o3 = orientation(p2, q2, p1)
+    o4 = orientation(p2, q2, q1)
+
+    if o1 != o2 and o3 != o4:
+        return True
+    if o1 == 0 and onSegment(p1, p2, q1):
+        return True
+    if o2 == 0 and onSegment(p1, q2, q1):
+        return True
+    if o3 == 0 and onSegment(p2, p1, q2):
+        return True
+    if o4 == 0 and onSegment(p2, q1, q2):
+        return True
+
+    return False
+
+# Main Function
+def isInside(poly, point):
+    n = len(poly)
+    if n < 3:
+        return False
+
+    point_extreme = [INF, point[y]]
+
+    count = 0
+    for i in range(n):
+        next = (i+1)% n
+
+        if doIntersect(poly[i], poly[next], point, point_extreme):
+            if orientation(poly[i], point, poly[next]) == 0:
+                return onSegment(poly[i], point,  poly[next])
+            count += 1
+
+    if count%2:
+        return True
+    else:
+        return False
+
+poly = []
+n = int(input("no of Points"))
+
+for i in range(n):
+    poly.append(list(map(float, input().rstrip().split())))
+point = list(map(float, input().rstrip().split()))
+
+print(isInside(poly, point))
+
+
+
